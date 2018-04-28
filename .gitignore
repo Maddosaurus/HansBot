@@ -1,3 +1,7 @@
+# absolutely ignore secrets.py and never ever commit again!
+# git update-index --assume-unchanged [path]
+secrets.py
+
 .vscode
 
 # Byte-compiled / optimized / DLL files
