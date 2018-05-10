@@ -17,13 +17,18 @@ async def on_message(message):
     if any(client.user.name in s.name for s in message.mentions):
         msg = 'Sie haben gerufen?'
         await client.send_message(message.channel, msg)
-
+    # Does the Treppenwitz
     if message.content.startswith(('!treppe', '!Treppe')):
         theserver = client.servers
         mess = message.content.split()
+        timeout = 5
+        try:
+            timeout = int(mess[2])
+        except (ValueError):
+            pass
+
         try:
             member_to_move = mess[1]
-            timeout = int(mess[2])
             member_obj = sorted(theserver)[0].get_member_named(member_to_move)
             member_voice_chan = member_obj.voice.voice_channel
 
