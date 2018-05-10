@@ -34,7 +34,8 @@ async def on_message(message):
                     silence = channel
                 else:
                     pass
-
+            if member_to_move == 'Günther':
+                raise Exception("Nein")
             msg = 'Ab auf die Treppe mir dir, {}!'.format(member_to_move)
             await client.send_message(message.channel, msg)
             await client.move_member(member_obj, silence)
