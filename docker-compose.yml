@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  hans:
+    build: .
+    environment:
+      - HANS_GIPHY_API_KEY=SomeAPIKey
+      - HANS_DISCORD_BOT_TOKEN=someApiToken
+      - HANS_TARGET_VOICE_ROOM=Voice Room Name

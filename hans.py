@@ -4,11 +4,17 @@ import time
 
 import discord
 
-import secrets
+from settings import SETTINGS
 import gifclient
 
 
 client = discord.Client()
+
+
+@client.event
+async def on_ready():
+    print("Logged in as {} with ID {}".format(client.user.name, client.user.id))
+    print("------")
 
 
 @client.event
@@ -55,7 +61,7 @@ async def on_message(message):
             channels = theserver.voice_channels
             silence = None
             for channel in channels:
-                if channel.name.startswith("Stille"):
+                if channel.name.startswith(SETTINGS.target_voice_room):
                     silence = channel
                     break
                 else:
@@ -78,12 +84,7 @@ async def on_message(message):
             await message.channel.send(msg)
 
 
-@client.event
-async def on_ready():
-    print("Logged in as")
-    print(client.user.name)
-    print(client.user.id)
-    print("------")
-
-
-client.run(secrets.TOKEN)
+try:
+    client.run(SETTINGS.discord_bot_token)
+except discord.errors.LoginFailure:
+    print("Could not log in - is the Discord bot token set right?")
