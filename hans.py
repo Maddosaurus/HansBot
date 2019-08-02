@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 
 import discord
@@ -27,11 +29,14 @@ async def on_message(message):
     if message.content.startswith(("!treppe", "!Treppe")):
         theserver = client.guilds[0]
         mess = message.content.split()
-        timeout = 5
+        timeout = 0
         try:
             timeout = int(mess[-1])
         except (ValueError):
-            pass
+            timeout = 5
+        
+        if (timeout < 1) or (timeout > 10):
+            timeout = 5
 
         try:
             member_to_move = " ".join(mess[1:-1]) # remove first and last param
