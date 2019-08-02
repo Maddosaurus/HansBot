@@ -11,7 +11,7 @@ api_instance = giphy_client.DefaultApi()
 def searchme(term):
     try: 
     # Search Endpoint
-        api_response = api_instance.gifs_search_get(SETTINGS.api_key, term, limit=50, offset=0, lang='en', fmt="json")
+        api_response = api_instance.gifs_search_get(SETTINGS.giphy_api_key, term, limit=50, offset=0, lang='en', fmt="json")
         random_number = randrange(len(api_response.data)-1)
         return api_response.data[random_number].url
     except ApiException as e:

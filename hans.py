@@ -24,10 +24,12 @@ async def on_message(message):
         return
     
     if message.content.lower().startswith(("!hilfe")):
+        print("Printing some help!")
         msg = "commands:\n!hilfe - for some help\n!wochenende - a handy link copy for the weekend video!\n!treppe <user> <seconds> - Move someone to Stille Treppe\nSay 'Hans' in chat to get a Flammenwerfer"
         await message.channel.send(msg)
 
     if message.content.lower().startswith(("hans")):
+        print("Posting a Flamethrower GIF!")
         msg = "*reicht {0.author.mention} den Flammenwerfer* \n{1}".format(message, gifclient.searchme("flamethrower"))
         await message.channel.send(msg)
     
@@ -36,6 +38,7 @@ async def on_message(message):
         await message.channel.send(msg)
 
     if message.content.startswith(("!Wochenende", "!wochenende")):
+        print("Giving a hint where to find the Wochenende")
         await message.channel.send("Direkt zum wechkopieren:\n!play https://www.youtube.com/watch?v=3aGf0t69_xk")
 
     # Does the Treppenwitz
@@ -53,8 +56,13 @@ async def on_message(message):
 
         try:
             member_to_move = " ".join(mess[1:-1]) # remove first and last param
-            all_members = client.users
-            member_obj = theserver.get_member_named(member_to_move)
+            if message.mentions:
+                member_obj = message.mentions[0]
+            else:
+                member_obj = theserver.get_member_named(member_to_move)
+
+            print("Member to move Name: ", member_to_move)
+            print("Member_obj: ", member_obj)
             
             member_voice_chan = member_obj.voice.channel
 
@@ -67,6 +75,7 @@ async def on_message(message):
                 else:
                     pass
 
+            print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
             msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
             await message.channel.send(msg)
             await member_obj.move_to(silence, reason="Auszeit!")
