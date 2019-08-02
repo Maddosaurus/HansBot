@@ -14,8 +14,8 @@ or through the corresponding environment variables:
 
 # ToDo
 - [ ] Moving users by tagging them (@...) does not work currently
-- [ x ] Make Giphy API key customizable
-- [ x ] Make target room customizable
+- [x] Make Giphy API key customizable
+- [x] Make target room customizable
 - [ ] Make Guild customizable (There's only one?)
-- [ x ] Make Discord key customizable
-- [ x ] Add Docker image
+- [x] Make Discord key customizable
+- [x] Add Docker image
