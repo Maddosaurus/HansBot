@@ -5,6 +5,7 @@ import time
 import discord
 
 import secrets
+import gifclient
 
 
 client = discord.Client()
@@ -15,18 +16,24 @@ async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author == client.user:
         return
+    
+    if message.content.lower().startswith(("!hilfe")):
+        msg = "commands:\n!hilfe - for some help\n!wochenende - a handy link copy for the weekend video!\n!treppe <user> <seconds> - Move someone to Stille Treppe\nSay 'Hans' in chat to get a Flammenwerfer"
+        await message.channel.send(msg)
 
-    if message.content.startswith(("hans", "Hans", "HANS")):
-        msg = "*reicht {0.author.mention} den Flammenwerfer*".format(message)
+    if message.content.lower().startswith(("hans")):
+        msg = "*reicht {0.author.mention} den Flammenwerfer* \n{1}".format(message, gifclient.searchme("flamethrower"))
         await message.channel.send(msg)
     
     if any(client.user.name in s.name for s in message.mentions):
         msg = "Sie haben gerufen?"
         await message.channel.send(msg)
 
+    if message.content.startswith(("!Wochenende", "!wochenende")):
+        await message.channel.send("Direkt zum wechkopieren:\n!play https://www.youtube.com/watch?v=3aGf0t69_xk")
 
     # Does the Treppenwitz
-    if message.content.startswith(("!treppe", "!Treppe")):
+    if message.content.lower().startswith(("!treppe")):
         theserver = client.guilds[0]
         mess = message.content.split()
         timeout = 0
@@ -50,6 +57,7 @@ async def on_message(message):
             for channel in channels:
                 if channel.name.startswith("Stille"):
                     silence = channel
+                    break
                 else:
                     pass
 
@@ -63,10 +71,10 @@ async def on_message(message):
             time.sleep(timeout)
             await member_obj.move_to(member_voice_chan)
         except (IndexError):
-            msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds>"
+            msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
             await message.channel.send(msg)
         except (AttributeError):
-            msg = "Seems I didn't find the user. Try again! Syntax: !treppe <user> <seconds>"
+            msg = "Seems I didn't find the user. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
             await message.channel.send(msg)
 
 
