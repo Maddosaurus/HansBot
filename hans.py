@@ -4,8 +4,8 @@ import time
 
 import discord
 
-from settings import SETTINGS
-import gifclient
+from util import gifclient, utils
+from util.settings import SETTINGS
 
 
 client = discord.Client()
@@ -45,14 +45,7 @@ async def on_message(message):
     if message.content.lower().startswith(("!treppe")):
         theserver = client.guilds[0]
         mess = message.content.split()
-        timeout = 0
-        try:
-            timeout = int(mess[-1])
-        except (ValueError):
-            timeout = 5
-        
-        if (timeout < 1) or (timeout > 10):
-            timeout = 5
+        timeout = utils.safely_calc_timeout(mess[-1])
 
         try:
             member_to_move = " ".join(mess[1:-1]) # remove first and last param
@@ -61,28 +54,18 @@ async def on_message(message):
             else:
                 member_obj = theserver.get_member_named(member_to_move)
 
-            print("Member to move Name: ", member_to_move)
-            print("Member_obj: ", member_obj)
-            
             member_voice_chan = member_obj.voice.channel
 
-            channels = theserver.voice_channels
-            silence = None
-            for channel in channels:
-                if channel.name.startswith(SETTINGS.target_voice_room):
-                    silence = channel
-                    break
-                else:
-                    pass
+            silence = utils.find_target_room(
+                SETTINGS.target_voice_room,
+                theserver.voice_channels
+            )
 
             print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
             msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
             await message.channel.send(msg)
             await member_obj.move_to(silence, reason="Auszeit!")
 
-            if timeout > 10:
-                timeout = 10
-            
             time.sleep(timeout)
             await member_obj.move_to(member_voice_chan)
         except (IndexError):

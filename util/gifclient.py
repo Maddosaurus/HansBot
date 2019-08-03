@@ -4,7 +4,7 @@ from pprint import pprint
 import giphy_client
 from giphy_client.rest import ApiException
 
-from settings import SETTINGS
+from .settings import SETTINGS
 
 api_instance = giphy_client.DefaultApi()
 
