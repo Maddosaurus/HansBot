@@ -1,14 +1,18 @@
 def safely_calc_timeout(str_input):
     default_timeout = 5
     timeout = 0
+    shenanigans = False
     try:
         timeout = int(str_input)
     except (ValueError):
         timeout = default_timeout
-    
+        shenanigans = True
+
     if (timeout < 1) or (timeout > 10):
         timeout = default_timeout
-    return timeout
+        shenanigans = True
+
+    return (timeout, shenanigans)
 
 
 def find_target_room(room_name, channels):

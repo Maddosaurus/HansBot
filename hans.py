@@ -45,11 +45,13 @@ async def on_message(message):
     if message.content.lower().startswith(("!treppe")):
         theserver = client.guilds[0]
         mess = message.content.split()
-        timeout = utils.safely_calc_timeout(mess[-1])
+        timeout, shenanigans = utils.safely_calc_timeout(mess[-1])
 
         try:
             member_to_move = " ".join(mess[1:-1]) # remove first and last param
-            if message.mentions:
+            if shenanigans:
+                member_obj = message.author
+            elif message.mentions:
                 member_obj = message.mentions[0]
             else:
                 member_obj = theserver.get_member_named(member_to_move)
@@ -61,8 +63,13 @@ async def on_message(message):
                 theserver.voice_channels
             )
 
-            print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
-            msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
+            if shenanigans:
+                print("Moving {} to {} for {} seconds for Bot-shenanigans".format(member_obj, SETTINGS.target_voice_room, timeout))
+                msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj)
+            else:
+                print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
+                msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
+
             await message.channel.send(msg)
             await member_obj.move_to(silence, reason="Auszeit!")
 
