@@ -9,7 +9,7 @@ from util.settings import SETTINGS
 
 
 client = discord.Client()
-
+msgs = []
 
 @client.event
 async def on_ready():
@@ -19,30 +19,42 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    # we do not want the bot to reply to itself
+    # we do not want the bot to reply to itself,
+	# however we do need to add its own messages
+	# to the list of messages to delete when the 
+	# cleanup command is used.
     if message.author == client.user:
-        return
-    
+		# Excluding flamethrower gifs from the purge
+        if not message.content.startswith("*reicht"):
+            msgs.append(message)
+
+
     if message.content.lower().startswith(("!hilfe")):
+        msgs.append(message)
         print("Printing some help!")
         msg = "commands:\n!hilfe - for some help\n!wochenende - a handy link copy for the weekend video!\n!treppe <user> <seconds> - Move someone to Stille Treppe\nSay 'Hans' in chat to get a Flammenwerfer"
         await message.channel.send(msg)
 
+
     if message.content.lower().startswith(("hans")):
+        msgs.append(message)
         print("Posting a Flamethrower GIF!")
         msg = "*reicht {0.author.mention} den Flammenwerfer* \n{1}".format(message, gifclient.searchme("flamethrower"))
         await message.channel.send(msg)
-    
+
     if any(client.user.name in s.name for s in message.mentions):
+        msgs.append(message)
         msg = "Sie haben gerufen?"
         await message.channel.send(msg)
 
     if message.content.startswith(("!Wochenende", "!wochenende")):
+        msgs.append(message)
         print("Giving a hint where to find the Wochenende")
         await message.channel.send("Direkt zum wechkopieren:\n!play https://www.youtube.com/watch?v=3aGf0t69_xk")
 
     # Does the Treppenwitz
     if message.content.lower().startswith(("!treppe")):
+        msgs.append(message)
         theserver = client.guilds[0]
         mess = message.content.split()
         timeout, shenanigans = utils.safely_calc_timeout(mess[-1])
@@ -83,6 +95,21 @@ async def on_message(message):
             await message.channel.send(msg)
 
 
+    if message.content.lower() == "!cleanup":
+        # Making sure the person executing the command has the permission to
+        # delete messages.
+        if message.author.guild_permissions.manage_messages:
+            print("Deleting all my messages and summons.")
+            msgs.append(message)
+            for msg in msgs:
+                try:
+                    await msg.delete()
+                except(discord.errors.NotFound):
+                    print("Skipping unknown message. Probably deleted by user.")
+            msgs.clear()
+        else:
+            msg = "You're not allowed to delete messages!"
+            await message.channel.send(msg)
 try:
     client.run(SETTINGS.discord_bot_token)
 except discord.errors.LoginFailure:
