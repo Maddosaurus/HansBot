@@ -70,7 +70,7 @@ async def on_message(message):
                 elif message.mentions:
                     member_obj = message.mentions[0]
                 else:
-                    member_obj = theserver.get_member_named(member_to_move)
+                    member_obj = utils.find_member(theserver, member_to_move)
 
                 member_voice_chan = member_obj.voice.channel
 
@@ -81,10 +81,10 @@ async def on_message(message):
 
                 if shenanigans:
                     print("Moving {} to {} for {} seconds for Bot-shenanigans".format(member_obj, SETTINGS.target_voice_room, timeout))
-                    msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj)
+                    msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj.mention)
                 else:
-                    print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
-                    msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
+                    print("Moving {} to {} for {} seconds".format(member_obj, SETTINGS.target_voice_room, timeout))
+                    msg = "Ab auf die Treppe mir dir, {}!".format(member_obj.mention)
 
                 await message.channel.send(msg)
                 await member_obj.move_to(silence, reason="Auszeit!")
