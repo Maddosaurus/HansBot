@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import asyncio
 import time
 
 import discord
@@ -10,6 +11,7 @@ from util.settings import SETTINGS
 
 client = discord.Client()
 msgs = []
+
 
 @client.event
 async def on_ready():
@@ -84,13 +86,16 @@ async def on_message(message):
                     msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj.mention)
                 else:
                     print("Moving {} to {} for {} seconds".format(member_obj, SETTINGS.target_voice_room, timeout))
-                    msg = "Ab auf die Treppe mir dir, {}!".format(member_obj.mention)
+                    msg = None
 
-                await message.channel.send(msg)
+                if msg is not None:
+                    await message.channel.send(msg)
                 await member_obj.move_to(silence, reason="Auszeit!")
 
                 time.sleep(timeout)
                 await member_obj.move_to(member_voice_chan)
+
+                await staggered_delete_message(message)
             except (IndexError):
                 msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
                 await message.channel.send(msg)
@@ -100,18 +105,26 @@ async def on_message(message):
 
 
     if message.content.lower().startswith(("!meeting")):
-        user = message.author
         theserver = client.guilds[0]
+        mess = message.content.split()
+
+        if message.mentions:
+            member_obj = message.mentions[0]
+        else:
+            member_to_move = " ".join(mess[1:]) # remove first param
+            member_obj = utils.find_member(theserver, member_to_move)
+
+        member_voice_chan = member_obj.voice.channel
 
         target_room = utils.find_target_room(
             "Meeting/Wutwandern",
             theserver.voice_channels
         )
-        print("Moving {} to {} for meetings".format(user, target_room))
-        msg = "{} ist nun im Meeting".format(user.nick)
+        print("Moving {} to {} for meetings".format(member_obj, target_room))
 
-        await message.channel.send(msg)
-        await user.move_to(target_room, reason="Meeting")
+        await member_obj.move_to(target_room, reason="Meeting")
+        time.sleep(1)
+        await message.delete() # remove the triggering user message
 
 
     if message.content.lower() == "!cleanup":
