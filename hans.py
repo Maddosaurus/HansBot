@@ -85,7 +85,7 @@ async def on_message(message):
                     print("Moving {} to {} for {} seconds for Bot-shenanigans".format(member_obj, SETTINGS.target_voice_room, timeout))
                     msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj.mention)
                 else:
-                    print("Moving {} to {} for {} seconds".format(member_obj, SETTINGS.target_voice_room, timeout))
+                    print("Moving {} to {} for {} seconds. {} asked for it.".format(member_obj, SETTINGS.target_voice_room, timeout, message.author))
                     msg = None
 
                 if msg is not None:
@@ -94,8 +94,6 @@ async def on_message(message):
 
                 time.sleep(timeout)
                 await member_obj.move_to(member_voice_chan)
-
-                await staggered_delete_message(message)
             except (IndexError):
                 msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
                 await message.channel.send(msg)
@@ -120,7 +118,7 @@ async def on_message(message):
             "Meeting/Wutwandern",
             theserver.voice_channels
         )
-        print("Moving {} to {} for meetings".format(member_obj, target_room))
+        print("Moving {} to {} for meetings. {} asked for it".format(member_obj, target_room, message.author))
 
         await member_obj.move_to(target_room, reason="Meeting")
         time.sleep(1)
