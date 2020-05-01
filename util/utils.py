@@ -20,7 +20,4 @@ def find_target_room(room_name, channels):
     for channel in channels:
         if channel.name.startswith(room_name):
             silence = channel
-            break
-        else:
-            pass
-    return silence
+            return silence

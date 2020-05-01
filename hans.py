@@ -99,6 +99,21 @@ async def on_message(message):
                 await message.channel.send(msg)
 
 
+    if message.content.lower().startswith(("!meeting")):
+        user = message.author
+        theserver = client.guilds[0]
+
+        target_room = utils.find_target_room(
+            "Meeting/Wutwandern",
+            theserver.voice_channels
+        )
+        print("Moving {} to {} for meetings".format(user, target_room))
+        msg = "{} ist nun im Meeting".format(user.nick)
+
+        await message.channel.send(msg)
+        await user.move_to(target_room, reason="Meeting")
+
+
     if message.content.lower() == "!cleanup":
         # Making sure the person executing the command has the permission to
         # delete messages.
