@@ -21,7 +21,7 @@ async def on_ready():
 async def on_message(message):
     # we do not want the bot to reply to itself,
 	# however we do need to add its own messages
-	# to the list of messages to delete when the 
+	# to the list of messages to delete when the
 	# cleanup command is used.
     if message.author == client.user:
 		# Excluding flamethrower gifs from the purge
@@ -57,42 +57,46 @@ async def on_message(message):
         msgs.append(message)
         theserver = client.guilds[0]
         mess = message.content.split()
-        timeout, shenanigans = utils.safely_calc_timeout(mess[-1])
-
-        try:
-            member_to_move = " ".join(mess[1:-1]) # remove first and last param
-            if shenanigans:
-                member_obj = message.author
-            elif message.mentions:
-                member_obj = message.mentions[0]
-            else:
-                member_obj = theserver.get_member_named(member_to_move)
-
-            member_voice_chan = member_obj.voice.channel
-
-            silence = utils.find_target_room(
-                SETTINGS.target_voice_room,
-                theserver.voice_channels
-            )
-
-            if shenanigans:
-                print("Moving {} to {} for {} seconds for Bot-shenanigans".format(member_obj, SETTINGS.target_voice_room, timeout))
-                msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj)
-            else:
-                print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
-                msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
-
-            await message.channel.send(msg)
-            await member_obj.move_to(silence, reason="Auszeit!")
-
-            time.sleep(timeout)
-            await member_obj.move_to(member_voice_chan)
-        except (IndexError):
+        if len(mess) < 3:
             msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
             await message.channel.send(msg)
-        except (AttributeError):
-            msg = "Seems I didn't find the user. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
-            await message.channel.send(msg)
+        else:
+            timeout, shenanigans = utils.safely_calc_timeout(mess[-1])
+
+            try:
+                member_to_move = " ".join(mess[1:-1]) # remove first and last param
+                if shenanigans:
+                    member_obj = message.author
+                elif message.mentions:
+                    member_obj = message.mentions[0]
+                else:
+                    member_obj = theserver.get_member_named(member_to_move)
+
+                member_voice_chan = member_obj.voice.channel
+
+                silence = utils.find_target_room(
+                    SETTINGS.target_voice_room,
+                    theserver.voice_channels
+                )
+
+                if shenanigans:
+                    print("Moving {} to {} for {} seconds for Bot-shenanigans".format(member_obj, SETTINGS.target_voice_room, timeout))
+                    msg = "Keine Spielchen mit dem Bot, {}!".format(member_obj)
+                else:
+                    print("Moving {} to {} for {} seconds".format(member_to_move, SETTINGS.target_voice_room, timeout))
+                    msg = "Ab auf die Treppe mir dir, {}!".format(member_to_move)
+
+                await message.channel.send(msg)
+                await member_obj.move_to(silence, reason="Auszeit!")
+
+                time.sleep(timeout)
+                await member_obj.move_to(member_voice_chan)
+            except (IndexError):
+                msg = "Somethings wrong with your arguments. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
+                await message.channel.send(msg)
+            except (AttributeError):
+                msg = "Seems I didn't find the user. Try again! Syntax: !treppe <user> <seconds> or !hilfe"
+                await message.channel.send(msg)
 
 
     if message.content.lower() == "!cleanup":
