@@ -6,8 +6,9 @@ Hans knows a fair bit of things. Here's a list:
 - If mentioned, Hans greets
 - If a message begins with `Hans` (case is ignored), Hans gets you the Flammenwerfer
 - `!help` - Print help
-- `!wochenende` - Post a handy dandy shortling to your weekend needs
 - `!treppe <user> <seconds>` - move given user to the silent channel for X seconds (Nickname or Mention, both works)
+- `!meeting` - Move yourself in the meeting channel
+- `!cleanup` - Remove summons and messages from Hans
 
 # Local installation
 Install deps via `pipenv install`.

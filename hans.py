@@ -49,11 +49,6 @@ async def on_message(message):
         msg = "Sie haben gerufen?"
         await message.channel.send(msg)
 
-    if message.content.startswith(("!Wochenende", "!wochenende")):
-        msgs.append(message)
-        print("Giving a hint where to find the Wochenende")
-        await message.channel.send("Direkt zum wechkopieren:\n!play https://www.youtube.com/watch?v=3aGf0t69_xk")
-
     # Does the Treppenwitz
     if message.content.lower().startswith(("!treppe")):
         msgs.append(message)
@@ -109,10 +104,9 @@ async def on_message(message):
         if message.mentions:
             member_obj = message.mentions[0]
         else:
-            member_to_move = " ".join(mess[1:]) # remove first param
-            member_obj = utils.find_member(theserver, member_to_move)
-
-        member_voice_chan = member_obj.voice.channel
+            print("No mention, moving message author...")
+            member_obj = message.author
+            print("Moving {}".format(member_obj))
 
         target_room = utils.find_target_room(
             "Meeting/Wutwandern",
